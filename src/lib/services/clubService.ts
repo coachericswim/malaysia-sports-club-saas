@@ -256,3 +256,236 @@ export const canUserPerformAction = async (
   // Check specific permissions
   return member.permissions.includes(action) || member.permissions.includes('all');
 };
+
+// Get all club members
+export const getClubMembers = async (
+  clubId: string
+): Promise<ClubMember[]> => {
+  try {
+    const membersQuery = query(
+      collection(db, 'clubs', clubId, 'members'),
+      where('status', '==', 'active'),
+      orderBy('joinedAt', 'desc')
+    );
+    
+    const membersSnapshot = await getDocs(membersQuery);
+    const members: ClubMember[] = [];
+    
+    for (const doc of membersSnapshot.docs) {
+      members.push({ id: doc.id, ...doc.data() } as ClubMember);
+    }
+    
+    return members;
+  } catch (error) {
+    console.error('Error fetching club members:', error);
+    return [];
+  }
+};
+
+// Get member details with user info
+export const getMemberWithUserInfo = async (
+  clubId: string,
+  memberId: string
+): Promise<{ member: ClubMember; userInfo: User } | null> => {
+  try {
+    const memberDoc = await getDoc(doc(db, 'clubs', clubId, 'members', memberId));
+    
+    if (!memberDoc.exists()) {
+      return null;
+    }
+    
+    const member = { id: memberDoc.id, ...memberDoc.data() } as ClubMember;
+    
+    // Get user info
+    const userDoc = await getDoc(doc(db, 'users', member.userId));
+    
+    if (!userDoc.exists()) {
+      return null;
+    }
+    
+    const userInfo = { id: userDoc.id, ...userDoc.data() } as User;
+    
+    return { member, userInfo };
+  } catch (error) {
+    console.error('Error fetching member with user info:', error);
+    return null;
+  }
+};
+
+// Update member role or permissions
+export const updateClubMember = async (
+  clubId: string,
+  memberId: string,
+  updates: Partial<ClubMember>
+): Promise<void> => {
+  try {
+    const memberRef = doc(db, 'clubs', clubId, 'members', memberId);
+    
+    await updateDoc(memberRef, {
+      ...updates,
+      updatedAt: new Date()
+    });
+  } catch (error) {
+    console.error('Error updating club member:', error);
+    throw error;
+  }
+};
+
+// Remove member from club (soft delete - changes status to inactive)
+export const removeClubMember = async (
+  clubId: string,
+  memberId: string
+): Promise<void> => {
+  try {
+    await updateClubMember(clubId, memberId, {
+      status: 'inactive',
+      leftAt: new Date()
+    });
+    
+    // Update club stats
+    const club = await getClubById(clubId);
+    if (club) {
+      await updateDoc(doc(db, 'clubs', clubId), {
+        'stats.totalMembers': club.stats.totalMembers - 1,
+        'stats.activeMembers': club.stats.activeMembers - 1
+      });
+    }
+  } catch (error) {
+    console.error('Error removing club member:', error);
+    throw error;
+  }
+};
+
+// Generate invitation code
+export const generateInvitationCode = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+};
+
+// Create club invitation
+export const createClubInvitation = async (
+  clubId: string,
+  invitationData: {
+    email: string;
+    role: ClubMember['role'];
+    message?: string;
+    expiresIn?: number; // days
+  }
+): Promise<string> => {
+  try {
+    const code = generateInvitationCode();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + (invitationData.expiresIn || 7));
+    
+    const invitationRef = doc(collection(db, 'clubs', clubId, 'invitations'));
+    
+    await setDoc(invitationRef, {
+      code,
+      email: invitationData.email,
+      role: invitationData.role,
+      message: invitationData.message || '',
+      status: 'pending',
+      createdAt: new Date(),
+      expiresAt,
+      usedAt: null,
+      usedBy: null
+    });
+    
+    return code;
+  } catch (error) {
+    console.error('Error creating invitation:', error);
+    throw error;
+  }
+};
+
+// Get pending invitations for a club
+export const getClubInvitations = async (
+  clubId: string
+): Promise<any[]> => {
+  try {
+    const invitationsQuery = query(
+      collection(db, 'clubs', clubId, 'invitations'),
+      where('status', '==', 'pending'),
+      orderBy('createdAt', 'desc')
+    );
+    
+    const snapshot = await getDocs(invitationsQuery);
+    const invitations: any[] = [];
+    
+    snapshot.forEach(doc => {
+      invitations.push({ id: doc.id, ...doc.data() });
+    });
+    
+    return invitations;
+  } catch (error) {
+    console.error('Error fetching invitations:', error);
+    return [];
+  }
+};
+
+// Accept invitation and join club
+export const acceptInvitation = async (
+  clubId: string,
+  invitationCode: string,
+  userId: string
+): Promise<boolean> => {
+  try {
+    // Find invitation by code
+    const invitationQuery = query(
+      collection(db, 'clubs', clubId, 'invitations'),
+      where('code', '==', invitationCode),
+      where('status', '==', 'pending')
+    );
+    
+    const snapshot = await getDocs(invitationQuery);
+    
+    if (snapshot.empty) {
+      return false;
+    }
+    
+    const invitationDoc = snapshot.docs[0];
+    const invitation = invitationDoc.data();
+    
+    // Check if invitation is expired
+    if (invitation.expiresAt.toDate() < new Date()) {
+      return false;
+    }
+    
+    // Add user as member
+    const memberRef = doc(collection(db, 'clubs', clubId, 'members'));
+    await setDoc(memberRef, {
+      userId,
+      clubId,
+      role: invitation.role || 'member',
+      permissions: invitation.role === 'admin' ? ['all'] : ['view'],
+      joinedAt: new Date(),
+      status: 'active',
+      invitedBy: invitation.createdBy || null
+    });
+    
+    // Update invitation status
+    await updateDoc(doc(db, 'clubs', clubId, 'invitations', invitationDoc.id), {
+      status: 'used',
+      usedAt: new Date(),
+      usedBy: userId
+    });
+    
+    // Update club stats
+    const club = await getClubById(clubId);
+    if (club) {
+      await updateDoc(doc(db, 'clubs', clubId), {
+        'stats.totalMembers': club.stats.totalMembers + 1,
+        'stats.activeMembers': club.stats.activeMembers + 1
+      });
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error accepting invitation:', error);
+    return false;
+  }
+};
