@@ -34,7 +34,8 @@ import {
   Shield,
   User as UserIcon,
   UserX,
-  ChevronLeft
+  ChevronLeft,
+  Share2
 } from 'lucide-react';
 
 interface MemberWithUser {
@@ -191,10 +192,19 @@ export default function ClubMembersPage() {
               </div>
             </div>
             {canManageMembers && (
-              <Button onClick={() => router.push(`/clubs/${clubId}/members/invite`)}>
-                <UserPlus className="w-4 h-4 mr-2" />
-                Invite Members
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline"
+                  onClick={() => router.push(`/clubs/${clubId}/members/bulk-invite`)}
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Bulk Registration Link
+                </Button>
+                <Button onClick={() => router.push(`/clubs/${clubId}/members/invite`)}>
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Invite Individual
+                </Button>
+              </div>
             )}
           </div>
         </div>

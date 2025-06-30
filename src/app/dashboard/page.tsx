@@ -141,7 +141,7 @@ export default function DashboardPage() {
             <Button 
               variant="outline" 
               className="h-auto p-4 flex flex-col items-center gap-2"
-              onClick={() => router.push(`/clubs/${club.id}/members/invite`)}
+              onClick={() => router.push(`/clubs/${club.id}/members/bulk-invite`)}
             >
               <UserPlus className="h-8 w-8" />
               <span>Invite Members</span>

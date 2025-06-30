@@ -142,7 +142,7 @@ export default function InviteMembersPage() {
   const copyInvitationLink = () => {
     if (!invitationCode) return;
     
-    const link = `${window.location.origin}/clubs/join?code=${invitationCode}&clubId=${clubId}`;
+    const link = `${window.location.origin}/join/${invitationCode}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
