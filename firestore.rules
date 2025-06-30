@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own documents
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Clubs
+    match /clubs/{clubId} {
+      // Anyone authenticated can read clubs
+      allow read: if request.auth != null;
+      
+      // Anyone authenticated can create a new club
+      allow create: if request.auth != null;
+      
+      // Only club admins/owners or superadmins can update
+      allow update: if request.auth != null && (
+        exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)).data.role in ['admin', 'owner']
+      ) || (
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.auth.role == 'superadmin'
+      );
+      
+      // Only superadmins can delete clubs
+      allow delete: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.auth.role == 'superadmin';
+      
+      // Members subcollection
+      match /members/{memberId} {
+        // Anyone authenticated can read members
+        allow read: if request.auth != null;
+        
+        // Allow creating the first member if:
+        // 1. The user is the creator of the club (checking createdBy field)
+        // 2. They are adding themselves as a member
+        allow create: if request.auth != null && (
+          // Creator adding themselves as first member
+          (
+            get(/databases/$(database)/documents/clubs/$(clubId)).data.createdBy == request.auth.uid &&
+            request.resource.data.userId == request.auth.uid
+          ) ||
+          // Existing admin/owner adding new members
+          (
+            exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)).data.role in ['admin', 'owner']
+          )
+        );
+        
+        // Only admins/owners can update or delete members
+        allow update, delete: if request.auth != null && (
+          exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)).data.role in ['admin', 'owner']
+        );
+      }
+    }
+  }
+}
