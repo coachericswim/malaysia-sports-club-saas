@@ -120,7 +120,7 @@ export default function ClubSettingsPage() {
         setGeneralForm({
           name: clubData.name,
           description: clubData.profile.description,
-          sport: clubData.sport,
+          sport: Array.isArray(clubData.sport) ? clubData.sport[0] : clubData.sport,
           established: clubData.profile.established ? 
             new Date(clubData.profile.established).toISOString().split('T')[0] : ''
         });

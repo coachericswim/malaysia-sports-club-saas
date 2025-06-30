@@ -129,7 +129,10 @@ export default function DashboardPage() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">{club.name} Dashboard</h1>
             <p className="text-muted-foreground">
-              {club.sport.charAt(0).toUpperCase() + club.sport.slice(1).replace('-', ' ')} Club • {club.address.city}, {club.address.state}
+              {Array.isArray(club.sport) 
+                ? club.sport[0].charAt(0).toUpperCase() + club.sport[0].slice(1).replace('-', ' ')
+                : club.sport.charAt(0).toUpperCase() + club.sport.slice(1).replace('-', ' ')
+              } Club • {club.address.city}, {club.address.state}
             </p>
           </div>
 

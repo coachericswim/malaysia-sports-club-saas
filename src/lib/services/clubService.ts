@@ -32,7 +32,19 @@ export const getTheClub = async (): Promise<Club | null> => {
     
     if (!snapshot.empty) {
       const clubDoc = snapshot.docs[0];
-      return { id: clubDoc.id, ...clubDoc.data() } as Club;
+      const clubData = clubDoc.data();
+      
+      // Handle legacy data where sport might be an array
+      if (Array.isArray(clubData.sport)) {
+        // Automatically migrate to single sport
+        const singleSport = clubData.sport[0] || 'other';
+        await updateDoc(doc(db, 'clubs', clubDoc.id), {
+          sport: singleSport
+        });
+        clubData.sport = singleSport;
+      }
+      
+      return { id: clubDoc.id, ...clubData } as Club;
     }
     
     return null;
@@ -173,7 +185,19 @@ export const getClubById = async (clubId: string): Promise<Club | null> => {
     const clubDoc = await getDoc(doc(db, 'clubs', clubId));
     
     if (clubDoc.exists()) {
-      return { id: clubDoc.id, ...clubDoc.data() } as Club;
+      const clubData = clubDoc.data();
+      
+      // Handle legacy data where sport might be an array
+      if (Array.isArray(clubData.sport)) {
+        // Automatically migrate to single sport
+        const singleSport = clubData.sport[0] || 'other';
+        await updateDoc(doc(db, 'clubs', clubId), {
+          sport: singleSport
+        });
+        clubData.sport = singleSport;
+      }
+      
+      return { id: clubDoc.id, ...clubData } as Club;
     }
     
     return null;
