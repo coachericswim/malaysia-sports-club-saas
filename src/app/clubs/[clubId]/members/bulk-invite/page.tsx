@@ -86,11 +86,14 @@ export default function BulkInvitePage() {
           expiresAt: new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000)
         });
         
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        toast.error('Failed to generate registration link');
-      } finally {
         setLoading(false);
+        
+      } catch (err: any) {
+        console.error('Error generating registration link:', err);
+        toast.error(err.message || 'Failed to generate registration link');
+        setLoading(false);
+        // Don't stay on loading screen - show error
+        router.push(`/clubs/${clubId}/members`);
       }
     };
 

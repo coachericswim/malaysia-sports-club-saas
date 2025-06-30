@@ -55,6 +55,27 @@ service cloud.firestore {
           get(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)).data.role in ['admin', 'owner']
         );
       }
+      
+      // Invitations subcollection
+      match /invitations/{invitationId} {
+        // Anyone can read invitations (needed for public registration)
+        allow read: if true;
+        
+        // Only admins/owners can create invitations
+        allow create: if request.auth != null && (
+          exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)).data.role in ['admin', 'owner']
+        );
+        
+        // Allow updates for tracking usage (public access needed for registration)
+        allow update: if true;
+        
+        // Only admins/owners can delete invitations
+        allow delete: if request.auth != null && (
+          exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/clubs/$(clubId)/members/$(request.auth.uid)).data.role in ['admin', 'owner']
+        );
+      }
     }
   }
 }
