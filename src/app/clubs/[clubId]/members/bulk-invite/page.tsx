@@ -51,17 +51,22 @@ export default function BulkInvitePage() {
 
       try {
         setLoading(true);
+        console.log('Starting bulk invite page load...', { clubId, userId: user.id });
         
         // Check permissions
         const canInvite = await canUserPerformAction(clubId, user.id, 'manage_members');
+        console.log('Permission check:', canInvite);
         if (!canInvite) {
+          console.log('No permission to invite members');
           router.push(`/clubs/${clubId}/members`);
           return;
         }
         
         // Fetch club data
         const clubData = await getClubById(clubId);
+        console.log('Club data:', clubData);
         if (!clubData) {
+          console.log('No club found');
           router.push('/dashboard');
           return;
         }
@@ -70,10 +75,12 @@ export default function BulkInvitePage() {
         
         // Generate registration link
         const code = generateInvitationCode();
+        console.log('Generated code:', code);
         setLinkCode(code);
         setRegistrationLink(`${window.location.origin}/join/${code}`);
         
         // Store the bulk invitation in Firebase
+        console.log('Creating invitation document...');
         const invitationRef = doc(collection(db, 'clubs', clubId, 'invitations'), code);
         await setDoc(invitationRef, {
           code,
@@ -85,6 +92,7 @@ export default function BulkInvitePage() {
           createdBy: user.id,
           expiresAt: new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000)
         });
+        console.log('Invitation created successfully');
         
         setLoading(false);
         
