@@ -1,5 +1,9 @@
 # Complete Feature Documentation - Malaysian Sports Club SaaS
 
+## 🎯 Single-Club Focus
+
+This system is designed for individual sports clubs. Each deployment serves ONE club only. All features below are for managing a single sports organization (e.g., "Shah Alam Badminton Academy" OR "KL Warriors Football Club").
+
 ## 📋 Table of Contents
 
 1. [Member Management](#member-management)
@@ -22,11 +26,12 @@
 - **Membership Tiers**: Junior, Senior, Premium, VIP
 
 #### How It Works
-1. New member fills online form
-2. Uploads required documents
-3. Admin reviews and approves
-4. Member receives digital membership card
-5. QR code generated for check-ins
+1. Admin sends invitation link/code to prospective member
+2. New member clicks link and fills registration form
+3. Uploads required documents
+4. Admin reviews and approves
+5. Member automatically added to THE club
+6. Digital membership card generated with QR code
 
 #### Screenshots
 - Registration form with multi-step wizard
@@ -38,7 +43,7 @@
 #### Search & Filter Options
 - By name, member ID, phone number
 - By membership tier
-- By sport category
+- By training group/level
 - By payment status
 - By join date
 

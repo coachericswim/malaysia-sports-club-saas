@@ -1,8 +1,8 @@
 # Complete Setup Guide - Malaysian Sports Club SaaS
 
-## 🎯 Overview
+## 🎯 Overview - Single Club Deployment
 
-This guide will walk you through setting up your Malaysian Sports Club Management SaaS from scratch. Even if you're not a developer, follow these steps carefully and you'll have your system running!
+This guide will walk you through setting up the management system for YOUR sports club. Each deployment serves ONE club only (e.g., "PJ Badminton Academy"). This is not a multi-club platform - it's YOUR club's dedicated management system.
 
 ## 📋 Prerequisites
 
@@ -31,7 +31,7 @@ This guide will walk you through setting up your Malaysian Sports Club Managemen
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
 2. Click "Create a project"
-3. Name it: "malaysia-sports-club"
+3. Name it with YOUR club name: "yourclub-management" (e.g., "pj-badminton-management")
 4. Disable Google Analytics (for now)
 5. Click "Create Project"
 
@@ -62,7 +62,7 @@ This guide will walk you through setting up your Malaysian Sports Club Managemen
 1. Click the gear icon ⚙️ → "Project settings"
 2. Scroll down to "Your apps"
 3. Click the "</>" (Web) icon
-4. Register app with nickname: "sports-club-web"
+4. Register app with nickname: "yourclub-web" (e.g., "pj-badminton-web")
 5. Copy the configuration object that appears
 
 ## 💳 Step 2: Stripe Setup

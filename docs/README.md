@@ -1,8 +1,10 @@
 # Malaysian Sports Club Management SaaS
 
-## 🏸 Transforming Sports Club Management in Malaysia
+## 🏸 Single-Club Management Platform
 
-A comprehensive SaaS platform designed specifically for Malaysian sports clubs (badminton, football, basketball, etc.) to streamline operations, enhance member experience, and grow their communities.
+**IMPORTANT**: This is a single-club deployment system. Each instance serves ONE sports club only (e.g., "Petaling Jaya Swimming Club"). This is NOT a multi-club platform.
+
+A comprehensive management system designed specifically for individual Malaysian sports clubs to streamline operations, enhance member experience, and maintain organized records.
 
 ## 🎯 Value Proposition
 
@@ -32,7 +34,7 @@ A comprehensive SaaS platform designed specifically for Malaysian sports clubs (
 - Stripe account for payments
 - Basic understanding of web browsers
 
-### Installation Steps
+### Installation Steps (For Club Setup)
 
 1. **Clone the repository**
    ```bash
@@ -58,6 +60,12 @@ A comprehensive SaaS platform designed specifically for Malaysian sports clubs (
 
 5. **Open your browser**
    Navigate to `http://localhost:3000`
+
+6. **Initial Club Setup**
+   - First user becomes the club administrator
+   - Configure your club details (name, sport type, location)
+   - Set up membership tiers and fees
+   - Invite other administrators
 
 ## ✨ Feature Highlights
 

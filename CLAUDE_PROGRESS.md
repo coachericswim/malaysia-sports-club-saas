@@ -1,9 +1,12 @@
 # Claude Code Progress Tracker - Malaysian Sports Club SaaS
 
+## ⚠️ ARCHITECTURE UPDATE (June 30, 2025)
+**IMPORTANT**: Project architecture has been revised to focus on single-club deployments. Each instance of this SaaS serves ONE sports club only (e.g., "PJ Swimming Club"). Members join that specific club via invitation. This is NOT a multi-club platform.
+
 ## 🚀 Project Status: Phase 3 IN PROGRESS
 
 **Last Updated**: June 30, 2025
-**Current Phase**: Phase 3 (Core Club Management) - 40% Complete
+**Current Phase**: Phase 3 (Core Club Management) - 50% Complete
 
 ## 📊 Overall Progress
 
@@ -23,6 +26,14 @@
 - [ ] Phase 9: Testing & Deployment
 
 ## 🏗️ What's Been Built
+
+### ⚠️ REQUIRED REFACTORING
+The following components need to be refactored for single-club architecture:
+- [ ] Dashboard - Currently shows multiple clubs, needs to show THE club
+- [ ] Registration - Needs to be invitation-only for THE club
+- [ ] Club Creation - Should be one-time setup, not user-accessible
+- [ ] Navigation - Remove multi-club assumptions
+- [ ] Data Model - Simplify from array of sports to single sport
 
 ### 🚧 Phase 3 Progress (Core Club Management)
 
@@ -81,6 +92,15 @@
    - Track pending invitations
    - Copy shareable invitation links
 
+9. **Club Settings Management** ✅
+   - `/src/app/clubs/[clubId]/settings/page.tsx` - Settings interface
+   - Three tabbed sections: General, Contact, Operating Hours
+   - Edit club name, description, and sports offered
+   - Update contact info and full address
+   - Configure operating hours by day
+   - Permission-based access control
+   - Toast notifications for feedback
+
 ### 📋 Phase 3 To-Do List:
 - [x] Create club data model and types
 - [x] Build club creation flow and UI
@@ -88,8 +108,8 @@
 - [x] Implement member management system
 - [x] Build member invitation system
 - [x] Create member directory with search
-- [ ] Add club settings management (NEXT TASK)
-- [ ] Implement facility/court management
+- [x] Add club settings management
+- [ ] Implement facility/court management (NEXT TASK)
 - [ ] Create club switching for multi-club users
 - [ ] Add club analytics dashboard
 

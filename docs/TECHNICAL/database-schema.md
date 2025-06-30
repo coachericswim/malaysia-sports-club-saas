@@ -1,29 +1,30 @@
 # Database Schema - Malaysian Sports Club SaaS
 
-## 🗄️ Overview
+## 🗄️ Overview - Single Club Database
 
-This document outlines the complete Firestore database structure for the Malaysian Sports Club SaaS platform. We use a NoSQL approach optimized for real-time updates and scalability.
+This document outlines the Firestore database structure for a SINGLE sports club deployment. Each instance serves ONE club only. The database is designed for managing one sports organization's complete operations.
 
 ## 📊 Database Design Principles
 
 1. **Denormalization**: Store related data together for faster reads
 2. **Real-time First**: Structure supports Firebase listeners
 3. **Security**: Implement field-level security rules
-4. **Scalability**: Design for 10,000+ clubs
+4. **Scalability**: Design for 10,000+ members in a single club
 5. **Localization**: Support for Malaysian context
+6. **Single-Club**: One club per deployment, no multi-tenancy
 
 ## 🏢 Collections Structure
 
-### 1. `clubs` Collection
+### 1. `club` Document (Single Document)
 
-Stores all club information.
+Stores THE club's information. Only ONE document exists in this collection.
 
 ```typescript
 interface Club {
   id: string; // Auto-generated
   name: string;
   nameSlug: string; // URL-friendly name
-  sport: SportType[];
+  sport: SportType; // Single sport per club
   status: 'active' | 'suspended' | 'trial';
   subscription: {
     plan: 'free' | 'professional' | 'enterprise';
