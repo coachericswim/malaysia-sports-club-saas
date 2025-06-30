@@ -279,7 +279,12 @@ export default function DashboardPage() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Today's Hours</span>
                     <span className="text-sm text-muted-foreground">
-                      {club.operatingHours[new Date().toLocaleLowerCase() as keyof typeof club.operatingHours].openTime} - {club.operatingHours[new Date().toLocaleLowerCase() as keyof typeof club.operatingHours].closeTime}
+                      {(() => {
+                        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                        const today = days[new Date().getDay()];
+                        const hours = club.operatingHours[today as keyof typeof club.operatingHours];
+                        return hours.isOpen ? `${hours.openTime} - ${hours.closeTime}` : 'Closed';
+                      })()}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
