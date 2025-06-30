@@ -9,7 +9,8 @@ import {
   where, 
   orderBy,
   serverTimestamp,
-  Timestamp 
+  Timestamp,
+  limit 
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Club, ClubMember, User } from '@/types';
@@ -20,6 +21,25 @@ const generateSlug = (name: string): string => {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+};
+
+// Get THE club (single-club deployment)
+export const getTheClub = async (): Promise<Club | null> => {
+  try {
+    // In a single-club deployment, we fetch the first (and only) club
+    const clubsQuery = query(collection(db, 'clubs'), limit(1));
+    const snapshot = await getDocs(clubsQuery);
+    
+    if (!snapshot.empty) {
+      const clubDoc = snapshot.docs[0];
+      return { id: clubDoc.id, ...clubDoc.data() } as Club;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error fetching the club:', error);
+    return null;
+  }
 };
 
 // Create a new club
@@ -54,7 +74,7 @@ export const createClub = async (
     const newClub: Omit<Club, 'id'> = {
       name: clubData.name || '',
       nameSlug: slug,
-      sport: clubData.sport || [],
+      sport: clubData.sport || 'other',
       status: 'trial', // Start with trial status
       subscription: {
         plan: 'free',

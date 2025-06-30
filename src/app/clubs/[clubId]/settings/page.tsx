@@ -62,7 +62,7 @@ export default function ClubSettingsPage() {
   const [generalForm, setGeneralForm] = useState({
     name: '',
     description: '',
-    sport: [] as SportType[],
+    sport: '' as SportType,
     established: ''
   });
   
@@ -227,12 +227,10 @@ export default function ClubSettingsPage() {
     }
   };
 
-  const toggleSportSelection = (sport: SportType) => {
+  const handleSportChange = (sport: SportType) => {
     setGeneralForm(prev => ({
       ...prev,
-      sport: prev.sport.includes(sport)
-        ? prev.sport.filter(s => s !== sport)
-        : [...prev.sport, sport]
+      sport: sport
     }));
   };
 
@@ -320,20 +318,22 @@ export default function ClubSettingsPage() {
                   </div>
 
                   <div>
-                    <Label>Sports Offered</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
-                      {SPORTS.map((sport) => (
-                        <div key={sport} className="flex items-center space-x-2">
-                          <Switch
-                            checked={generalForm.sport.includes(sport)}
-                            onCheckedChange={() => toggleSportSelection(sport)}
-                          />
-                          <Label className="capitalize cursor-pointer">
-                            {sport.replace('-', ' ')}
-                          </Label>
-                        </div>
-                      ))}
-                    </div>
+                    <Label>Club Sport</Label>
+                    <Select
+                      value={generalForm.sport}
+                      onValueChange={(value: SportType) => handleSportChange(value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SPORTS.map((sport) => (
+                          <SelectItem key={sport} value={sport}>
+                            {sport.charAt(0).toUpperCase() + sport.slice(1).replace('-', ' ')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>

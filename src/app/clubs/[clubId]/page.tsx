@@ -152,7 +152,7 @@ export default function ClubDashboard() {
               <div className="flex items-center space-x-4 text-sm text-gray-600">
                 <div className="flex items-center">
                   <Building className="w-4 h-4 mr-1" />
-                  {club.sport.join(', ')}
+                  {club.sport.charAt(0).toUpperCase() + club.sport.slice(1).replace('-', ' ')}
                 </div>
                 <div className="flex items-center">
                   <MapPin className="w-4 h-4 mr-1" />

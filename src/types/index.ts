@@ -61,7 +61,7 @@ export interface Club {
   id: string;
   name: string;
   nameSlug: string;
-  sport: SportType[];
+  sport: SportType;
   status: 'active' | 'suspended' | 'trial';
   subscription: ClubSubscription;
   profile: ClubProfile;
@@ -199,8 +199,7 @@ export interface EmergencyContact {
 }
 
 export interface MemberSports {
-  primary: SportType;
-  others: SportType[];
+  sport: SportType;
   level: 'beginner' | 'intermediate' | 'advanced' | 'professional';
 }
 

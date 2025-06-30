@@ -56,7 +56,7 @@ export default function CreateClubPage() {
   const [formData, setFormData] = useState({
     // Basic Info
     name: '',
-    sports: [] as SportType[],
+    sport: '' as SportType,
     registrationType: 'society' as 'society' | 'company' | 'association',
     registrationNumber: '',
     established: new Date().getFullYear().toString(),
@@ -76,12 +76,10 @@ export default function CreateClubPage() {
     postcode: ''
   });
 
-  const handleSportToggle = (sport: SportType) => {
+  const handleSportChange = (sport: SportType) => {
     setFormData(prev => ({
       ...prev,
-      sports: prev.sports.includes(sport)
-        ? prev.sports.filter(s => s !== sport)
-        : [...prev.sports, sport]
+      sport: sport
     }));
   };
 
@@ -90,8 +88,8 @@ export default function CreateClubPage() {
     setError('');
     
     // Validation
-    if (formData.sports.length === 0) {
-      setError('Please select at least one sport');
+    if (!formData.sport) {
+      setError('Please select a sport');
       return;
     }
     
@@ -105,7 +103,7 @@ export default function CreateClubPage() {
     try {
       const club = await createClub({
         name: formData.name,
-        sport: formData.sports,
+        sport: formData.sport,
         profile: {
           description: formData.description,
           established: new Date(`${formData.established}-01-01`),
@@ -154,8 +152,8 @@ export default function CreateClubPage() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold">Create Your Sports Club</h1>
-                <p className="text-sm text-muted-foreground">Set up your club in just a few minutes</p>
+                <h1 className="text-2xl font-bold">Initial Club Setup</h1>
+                <p className="text-sm text-muted-foreground">One-time configuration for your club management system</p>
               </div>
             </div>
           </div>
@@ -193,24 +191,22 @@ export default function CreateClubPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Sports Offered *</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {SPORTS.map(sport => (
-                      <div key={sport.value} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={sport.value}
-                          checked={formData.sports.includes(sport.value)}
-                          onCheckedChange={() => handleSportToggle(sport.value)}
-                        />
-                        <Label
-                          htmlFor={sport.value}
-                          className="text-sm font-normal cursor-pointer"
-                        >
+                  <Label>Club Sport *</Label>
+                  <Select
+                    value={formData.sport}
+                    onValueChange={(value: SportType) => handleSportChange(value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your club's sport" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SPORTS.map(sport => (
+                        <SelectItem key={sport.value} value={sport.value}>
                           {sport.label}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
